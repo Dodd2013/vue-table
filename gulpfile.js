@@ -12,9 +12,9 @@ gulp.task("build", async function () {
     const bundle = await rollup.rollup({
         input: "./src/vue-table.vue",
         plugins: [
+            commonjs(),
             rollupVue(),
             rollupBabel(),
-            commonjs(),
             resolve()
 
         ]
@@ -34,7 +34,7 @@ gulp.task("build", async function () {
 });
 
 
-gulp.task("browser-sync", function () {
+gulp.task("browser-sync",["build"], function () {
     browserSync.init({
         server: {
             baseDir: "./examples/"

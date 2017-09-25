@@ -6,20 +6,29 @@
 </head>
 <body>
 <div id="app">
-    Hello Vue-table!
-    <vue-table></vue-table>
+    {{message}}
+    <vue-table :columns="todoTable.columns" :source="todoTable.source"></vue-table>
 </div>
 </body>
-<script src="vue.min.js"></script>
+<script src="vue.js"></script>
 <script src="vue-table.umd.min.js"></script>
 <script>
     var app = new Vue({
         el: "#app",
         components: {
-            vueTable:vueTable
+            vueTable: vueTable
         },
         data: {
-            message: "Hello Vue!"
+            message: "Hello Vue-table!",
+            todoTable: {
+                columns: ["id", {name:"desc"}, {
+                    name: "op", format: function (row) {
+                        console.log(row);
+                        return "fdsaf";
+                    }
+                }],
+                source: [{id: "1", desc: "fdsagdsa"}, {id: "2", desc: "hgfdhgdfbgfd"}, {id: "3", desc: "ytreyterytr"}]
+            }
         }
     });
 </script>
