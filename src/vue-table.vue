@@ -2,9 +2,11 @@
     <div class='vue-table-component' :class="style.component">
         <div class="vue-table-toolbar" :class="style.toolbar"></div>
         <div class="vue-table-container" :class="style.tableContainer">
-            <table class="vue-table" :class="style.table">
+            <table class="vue-table" :class="[style.table,{'striped':options.striped}]">
                 <thead :class="style.thead">
-                <tr><th v-for="column in columnsTitle">{{column}}</th></tr>
+                <tr>
+                    <th v-for="column in columnsTitle">{{column}}</th>
+                </tr>
                 </thead>
                 <tbody :class="style.tbody">
                 <tr v-for="row in rowData">
@@ -45,7 +47,7 @@
                         style: {},
                         height: "auto",
                         undefinedText: "-",
-                        striped: false
+                        striped: true
                     };
                 }
             }

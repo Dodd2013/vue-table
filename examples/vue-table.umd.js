@@ -6,7 +6,7 @@
 
 var semantic = {
     tableContainer: "",
-    table: "ui celled table"
+    table: "ui celled teal table"
 };
 var bootstrap = {};
 
@@ -2370,7 +2370,7 @@ var merge = _createAssigner(function (object, source, srcIndex) {
 var merge_1 = merge;
 
 var vueTable = { render: function render() {
-        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-component", class: _vm.style.component }, [_c('div', { staticClass: "vue-table-toolbar", class: _vm.style.toolbar }), _c('div', { staticClass: "vue-table-container", class: _vm.style.tableContainer }, [_c('table', { staticClass: "vue-table", class: _vm.style.table }, [_c('thead', { class: _vm.style.thead }, [_c('tr', _vm._l(_vm.columnsTitle, function (column) {
+        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-component", class: _vm.style.component }, [_c('div', { staticClass: "vue-table-toolbar", class: _vm.style.toolbar }), _c('div', { staticClass: "vue-table-container", class: _vm.style.tableContainer }, [_c('table', { staticClass: "vue-table", class: [_vm.style.table, { 'striped': _vm.options.striped }] }, [_c('thead', { class: _vm.style.thead }, [_c('tr', _vm._l(_vm.columnsTitle, function (column) {
             return _c('th', [_vm._v(_vm._s(column))]);
         }))]), _c('tbody', { class: _vm.style.tbody }, _vm._l(_vm.rowData, function (row) {
             return _c('tr', _vm._l(_vm.columnsName, function (column) {
@@ -2395,7 +2395,7 @@ var vueTable = { render: function render() {
                     style: {},
                     height: "auto",
                     undefinedText: "-",
-                    striped: false
+                    striped: true
                 };
             }
         }

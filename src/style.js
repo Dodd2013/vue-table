@@ -1,6 +1,6 @@
 const semantic = {
     tableContainer: "",
-    table: "ui celled table"
+    table: "ui celled teal table"
 };
 const bootstrap = {};
 
