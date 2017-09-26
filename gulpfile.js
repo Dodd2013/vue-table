@@ -27,21 +27,22 @@ gulp.task("build", async function () {
         sourcemap: true
     });
     await gulp.src("./dist/vue-table.umd.js")
+        .pipe(gulp.dest("./examples"))
         .pipe(uglify())
         .pipe(rename({suffix: ".min"}))
-        .pipe(gulp.dest("./dist"))
-        .pipe(gulp.dest("./examples"));
+        .pipe(gulp.dest("./dist"));
+
 });
 
 
-gulp.task("browser-sync",["build"], function () {
+gulp.task("browser-sync", ["build"], function () {
     browserSync.init({
         server: {
             baseDir: "./examples/"
         }
     });
 
-    gulp.watch(["src/**.*"], ["build"]);
+    gulp.watch(["src/**/*.*", "src/*"], ["build"]);
 
     gulp.watch("examples/**.*").on("change", browserSync.reload);
 });

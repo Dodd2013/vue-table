@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Vue-table Demo</title>
+    <link href="https://cdn.bootcss.com/semantic-ui/2.2.13/semantic.css" rel="stylesheet">
 </head>
 <body>
 <div id="app">
-    {{message}}
-    <vue-table :columns="todoTable.columns" :source="todoTable.source"></vue-table>
+    <div class="ui container">
+        <h1>{{message}}</h1>
+        <vue-table :columns="todoTable.columns" :source="todoTable.source"></vue-table>
+    </div>
+
 </div>
 </body>
 <script src="vue.js"></script>
-<script src="vue-table.umd.min.js"></script>
+<script src="vue-table.umd.js"></script>
+<script src="https://cdn.bootcss.com/semantic-ui/2.2.13/semantic.js"></script>
 <script>
     var app = new Vue({
         el: "#app",
@@ -21,13 +26,13 @@
         data: {
             message: "Hello Vue-table!",
             todoTable: {
-                columns: ["id", {name:"desc"}, {
+                columns: ["id", {name: "desc"}, {
                     name: "op", format: function (row) {
                         console.log(row);
                         return "fdsaf";
                     }
                 }],
-                source: [{id: "1", desc: "fdsagdsa"}, {id: "2", desc: "hgfdhgdfbgfd"}, {id: "3", desc: "ytreyterytr"}]
+                source: {apiUrl: "/data/mock.json", method: "GET"}
             }
         }
     });
