@@ -5,21 +5,59 @@
             <table class="vue-table" :class="[style.table,{'striped':options.striped}]">
                 <thead :class="style.thead">
                 <tr>
+                    <th :colspan="columnsTitle.length">
+                        <div class="ui grid">
+                            <div class="ten wide column">
+                                <h1>Vue-Table</h1>
+                            </div>
+                            <div class="right aligned six wide column">
+                                <div class="ui search">
+                                    <div class="ui icon input">
+                                        <input class="prompt" type="text" placeholder="Search countries...">
+                                        <i class="search icon"></i>
+                                    </div>
+                                    <div class="results"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </th>
+                </tr>
+                <tr>
                     <th v-for="column in columnsTitle">{{column}}</th>
                 </tr>
                 </thead>
                 <tbody :class="style.tbody">
                 <tr v-for="row in rowData">
-                    <td v-for="column in columnsName">
-                        <template v-if="!column.hasFormat">
-                            {{row[column.name]}}
-                        </template>
-                        <template v-if="column.hasFormat">
-                            {{column.format(row)}}
-                        </template>
-                    </td>
+                    <td v-for="column in columnsName"
+                        v-html="column.hasFormat ? column.format(row) : row[column.name]"></td>
                 </tr>
                 </tbody>
+                <tfoot>
+                <tr>
+                    <th :colspan="columnsTitle.length">
+                        <div class="ui grid">
+                            <div class="six wide column">
+
+                            </div>
+                            <div class="right aligned ten wide column">
+                                <div class="ui pagination menu">
+                                    <a class="icon item">
+                                        <i class="left chevron icon"></i>
+                                    </a>
+                                    <a class="item">1</a>
+                                    <a class="item">2</a>
+                                    <a class="item">3</a>
+                                    <a class="item">4</a>
+                                    <a class="icon item">
+                                        <i class="right chevron icon"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </th>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -28,6 +66,7 @@
 <script>
     import style from "./style.js";
     import merge from "lodash/merge";
+    //    import xss from "xss";
 
     export default {
         name: "vue-table",
@@ -43,11 +82,15 @@
                 type: [Object],
                 default: function () {
                     return {
-                        styleType: "semantic", //e.g. semanti bootstrap
+                        pagination: {
+                            type: "client",  //e.g. client server none
+                            size: 10,
+                            start: 0
+                        },
+                        styleType: "semantic", //e.g. semantic bootstrap
                         style: {},
-                        height: "auto",
                         undefinedText: "-",
-                        striped: true
+                        striped: false
                     };
                 }
             }
@@ -56,24 +99,41 @@
             return {
                 style: {},
                 columnsTitle: {},
-                rowData: {}
+                rowData: {},
+                serverParams: {},
+                mode: "data"  //e.g. data, api, promise
             };
         },
         computed: {},
-        methods: {},
+        methods: {refresh},
         mounted
     };
+
+    /*******************************
+     * methods
+     *******************************/
+
+    function refresh() {
+        source2RowData(this.source, this.serverParams).then((data) => {
+            this.rowData = data;
+        });
+    }
 
     /***********************
      * mounted
      ***********************/
+
     function mounted() {
 
+        //Init Style
         this.style = merge(this.options.styleType ? style[this.options.styleType] : {}, this.options.style);
 
+        // Init column display title
         this.columnsTitle = this.columns.map(function (item) {
             return typeof item === "string" ? item : (item.display || item.name);
         });
+
+        // Init column name for row data
         this.columnsName = this.columns.map(function (item) {
             return {
                 name: typeof item === "string" ? item : item.name,
@@ -81,9 +141,10 @@
                 format: item.format
             };
         });
-        source2RowData(this.source, {count: 10}).then((data) => {
-            this.rowData = data;
-        });
+        // Init serverParams
+        this.serverParams.pagination = this.options.pagination;
+
+        this.refresh();
 
     }
 
@@ -156,5 +217,4 @@
 </script>
 
 <style scoped>
-
 </style>

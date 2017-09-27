@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.vueTable = factory());
-}(this, (function () { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(factory((global.vueTable = {})));
+}(this, (function (exports) { 'use strict';
 
 var semantic = {
     tableContainer: "",
@@ -2369,15 +2369,33 @@ var merge = _createAssigner(function (object, source, srcIndex) {
 
 var merge_1 = merge;
 
+(function () {
+    if (typeof document !== 'undefined') {
+        var head = document.head || document.getElementsByTagName('head')[0],
+            style$$1 = document.createElement('style'),
+            css = " /*# sourceMappingURL=vue-table.vue.map */";style$$1.type = 'text/css';if (style$$1.styleSheet) {
+            style$$1.styleSheet.cssText = css;
+        } else {
+            style$$1.appendChild(document.createTextNode(css));
+        }head.appendChild(style$$1);
+    }
+})();
+
+//    import xss from "xss";
+
 var vueTable = { render: function render() {
-        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-component", class: _vm.style.component }, [_c('div', { staticClass: "vue-table-toolbar", class: _vm.style.toolbar }), _c('div', { staticClass: "vue-table-container", class: _vm.style.tableContainer }, [_c('table', { staticClass: "vue-table", class: [_vm.style.table, { 'striped': _vm.options.striped }] }, [_c('thead', { class: _vm.style.thead }, [_c('tr', _vm._l(_vm.columnsTitle, function (column) {
+        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-component", class: _vm.style.component }, [_c('div', { staticClass: "vue-table-toolbar", class: _vm.style.toolbar }), _c('div', { staticClass: "vue-table-container", class: _vm.style.tableContainer }, [_c('table', { staticClass: "vue-table", class: [_vm.style.table, { 'striped': _vm.options.striped }] }, [_c('thead', { class: _vm.style.thead }, [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_vm._m(0)])]), _c('tr', _vm._l(_vm.columnsTitle, function (column) {
             return _c('th', [_vm._v(_vm._s(column))]);
         }))]), _c('tbody', { class: _vm.style.tbody }, _vm._l(_vm.rowData, function (row) {
             return _c('tr', _vm._l(_vm.columnsName, function (column) {
-                return _c('td', [!column.hasFormat ? [_vm._v(_vm._s(row[column.name]))] : _vm._e(), column.hasFormat ? [_vm._v(_vm._s(column.format(row)))] : _vm._e()], 2);
+                return _c('td', { domProps: { "innerHTML": _vm._s(column.hasFormat ? column.format(row) : row[column.name]) } });
             }));
-        }))])])]);
-    }, staticRenderFns: [], _scopeId: 'data-v-19f1d484',
+        })), _c('tfoot', [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_vm._m(1)])])])])])]);
+    }, staticRenderFns: [function () {
+        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "ten wide column" }, [_c('h1', [_vm._v("Vue-Table")])]), _c('div', { staticClass: "right aligned six wide column" }, [_c('div', { staticClass: "ui search" }, [_c('div', { staticClass: "ui icon input" }, [_c('input', { staticClass: "prompt", attrs: { "type": "text", "placeholder": "Search countries..." } }), _vm._v(" "), _c('i', { staticClass: "search icon" })]), _c('div', { staticClass: "results" })])])]);
+    }, function () {
+        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "six wide column" }), _c('div', { staticClass: "right aligned ten wide column" }, [_c('div', { staticClass: "ui pagination menu" }, [_c('a', { staticClass: "icon item" }, [_c('i', { staticClass: "left chevron icon" })]), _c('a', { staticClass: "item" }, [_vm._v("1")]), _vm._v(" "), _c('a', { staticClass: "item" }, [_vm._v("2")]), _vm._v(" "), _c('a', { staticClass: "item" }, [_vm._v("3")]), _vm._v(" "), _c('a', { staticClass: "item" }, [_vm._v("4")]), _vm._v(" "), _c('a', { staticClass: "icon item" }, [_c('i', { staticClass: "right chevron icon" })])])])]);
+    }], _scopeId: 'data-v-19f1d484',
     name: "vue-table",
     props: {
         source: {
@@ -2391,11 +2409,15 @@ var vueTable = { render: function render() {
             type: [Object],
             default: function _default() {
                 return {
-                    styleType: "semantic", //e.g. semanti bootstrap
+                    pagination: {
+                        type: "client", //e.g. client server none
+                        size: 10,
+                        start: 0
+                    },
+                    styleType: "semantic", //e.g. semantic bootstrap
                     style: {},
-                    height: "auto",
                     undefinedText: "-",
-                    striped: true
+                    striped: false
                 };
             }
         }
@@ -2404,26 +2426,44 @@ var vueTable = { render: function render() {
         return {
             style: {},
             columnsTitle: {},
-            rowData: {}
+            rowData: {},
+            serverParams: {},
+            mode: "data" //e.g. data, api, promise
         };
     },
 
     computed: {},
-    methods: {},
+    methods: { refresh: refresh },
     mounted: mounted
 };
+
+/*******************************
+ * methods
+ *******************************/
+
+function refresh() {
+    var _this = this;
+
+    source2RowData(this.source, this.serverParams).then(function (data) {
+        _this.rowData = data;
+    });
+}
 
 /***********************
  * mounted
  ***********************/
-function mounted() {
-    var _this = this;
 
+function mounted() {
+
+    //Init Style
     this.style = merge_1(this.options.styleType ? style[this.options.styleType] : {}, this.options.style);
 
+    // Init column display title
     this.columnsTitle = this.columns.map(function (item) {
         return typeof item === "string" ? item : item.display || item.name;
     });
+
+    // Init column name for row data
     this.columnsName = this.columns.map(function (item) {
         return {
             name: typeof item === "string" ? item : item.name,
@@ -2431,9 +2471,10 @@ function mounted() {
             format: item.format
         };
     });
-    source2RowData(this.source, { count: 10 }).then(function (data) {
-        _this.rowData = data;
-    });
+    // Init serverParams
+    this.serverParams.pagination = this.options.pagination;
+
+    this.refresh();
 }
 
 /***********************
@@ -2453,7 +2494,7 @@ function source2RowData(source, params) {
     } else if (typeof source === "function") {
         // promise mode
         return source(params);
-    } else if ((typeof source === "undefined" ? "undefined" : _typeof(source)) === "object") {
+    } else if ((typeof source === 'undefined' ? 'undefined' : _typeof(source)) === "object") {
         // data mode
         return Promise.resolve(source);
     }
@@ -2504,7 +2545,59 @@ function sourceApiData(source, params) {
     });
 }
 
-return vueTable;
+(function () {
+    if (typeof document !== 'undefined') {
+        var head = document.head || document.getElementsByTagName('head')[0],
+            style = document.createElement('style'),
+            css = " /*# sourceMappingURL=vue-table-info.vue.map */";style.type = 'text/css';if (style.styleSheet) {
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }head.appendChild(style);
+    }
+})();
+
+var vueTableInfo = { render: function render() {
+        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-info-component" });
+    }, staticRenderFns: [], _scopeId: 'data-v-a3818fe6',
+    name: 'vue-table-info',
+    data: function data() {
+        return {};
+    },
+
+    methods: {},
+    mounted: function mounted() {}
+};
+
+(function () {
+    if (typeof document !== 'undefined') {
+        var head = document.head || document.getElementsByTagName('head')[0],
+            style = document.createElement('style'),
+            css = " /*# sourceMappingURL=vue-table-pagination.vue.map */";style.type = 'text/css';if (style.styleSheet) {
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }head.appendChild(style);
+    }
+})();
+
+var vueTablePagination = { render: function render() {
+        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-pagination-component" });
+    }, staticRenderFns: [], _scopeId: 'data-v-fb2af88e',
+    name: 'vue-table-pagination',
+    data: function data() {
+        return {};
+    },
+
+    methods: {},
+    mounted: function mounted() {}
+};
+
+exports.vueTable = vueTable;
+exports.vueTableInfo = vueTableInfo;
+exports.vueTablePagination = vueTablePagination;
+
+Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 //# sourceMappingURL=vue-table.umd.js.map

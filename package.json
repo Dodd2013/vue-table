@@ -1,10 +1,14 @@
 {
   "name": "vue-table",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Best data table for vue.",
   "author": "Dodd <291106637@qq.com>",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "start": "gulp browser-sync",
+    "bulid": "gulp build"
+  },
+  "main": "dist/vue-table.umd.js",
   "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.26.0",

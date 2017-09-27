@@ -6,16 +6,18 @@ const rollupVue = require("rollup-plugin-vue");
 const resolve = require("rollup-plugin-node-resolve");
 const commonjs = require("rollup-plugin-commonjs");
 const rollupBabel = require("rollup-plugin-babel");
+const rollupCss = require("rollup-plugin-css-only");
 
 const browserSync = require("browser-sync").create();
 gulp.task("build", async function () {
     const bundle = await rollup.rollup({
-        input: "./src/vue-table.vue",
+        input: "./src/main.js",
         plugins: [
+            rollupVue({compileTemplate: true, css: true}),
             commonjs(),
-            rollupVue(),
             rollupBabel(),
             resolve()
+
 
         ]
     });
