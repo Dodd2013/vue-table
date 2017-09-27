@@ -1,7 +1,7 @@
 # vue-table
 Best date table for vue2
 
-###How to use?
+### How to use?
 npm(need to upload to npm)
 
 For now, you can down /dist/vue-table.umd(.min).js
