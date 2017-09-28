@@ -1,15 +1,27 @@
 {
-  "name": "vue-table",
+  "name": "best-vue-table",
   "version": "1.0.1",
   "description": "Best data table for vue.",
   "author": "Dodd <291106637@qq.com>",
-  "private": true,
   "scripts": {
     "start": "gulp browser-sync",
     "bulid": "gulp build"
   },
   "main": "dist/vue-table.umd.js",
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.0.0"
+  },
+  "directories": {
+    "example": "examples"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dodd2013/vue-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dodd2013/vue-table/issues"
+  },
+  "homepage": "https://github.com/dodd2013/vue-table#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
@@ -18,7 +30,6 @@
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^3.0.0",
-    "lodash": "^4.17.4",
     "rollup": "^0.50.0",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.1",
@@ -26,8 +37,21 @@
     "rollup-plugin-vue": "^2.4.2",
     "vue": "^2.4.2"
   },
+  "keywords": [
+    "vue",
+    "vuejs",
+    "table",
+    "component",
+    "json",
+    "pagination",
+    "data"
+  ],
   "engines": {
     "node": ">= 4.0.0",
     "npm": ">= 3.0.0"
-  }
+  },
+  "overwrite":{
+
+  },
+  "license": "MIT"
 }

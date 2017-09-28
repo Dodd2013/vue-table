@@ -41,18 +41,8 @@
 
                             </div>
                             <div class="right aligned ten wide column">
-                                <div class="ui pagination menu">
-                                    <a class="icon item">
-                                        <i class="left chevron icon"></i>
-                                    </a>
-                                    <a class="item">1</a>
-                                    <a class="item">2</a>
-                                    <a class="item">3</a>
-                                    <a class="item">4</a>
-                                    <a class="icon item">
-                                        <i class="right chevron icon"></i>
-                                    </a>
-                                </div>
+                                <vue-table-pagination :styles="style" @pageIndexChange="onPageIndexChange"
+                                                      :pagination="{current:3,total:50,size:10}"></vue-table-pagination>
                             </div>
                         </div>
                     </th>
@@ -65,11 +55,15 @@
 
 <script>
     import style from "./style.js";
-    import merge from "lodash/merge";
-    //    import xss from "xss";
+    import _ from "lodash";
+    import vueTablePagination from "./vue-table-pagination.vue";
+
 
     export default {
         name: "vue-table",
+        components: {
+            vueTablePagination
+        },
         props: {
             source: {
                 type: [Object, Function, Array]
@@ -84,8 +78,7 @@
                     return {
                         pagination: {
                             type: "client",  //e.g. client server none
-                            size: 10,
-                            start: 0
+                            size: 10
                         },
                         styleType: "semantic", //e.g. semantic bootstrap
                         style: {},
@@ -97,25 +90,51 @@
         },
         data() {
             return {
-                style: {},
-                columnsTitle: {},
+                style: _.merge(this.options.styleType ? style[this.options.styleType] : {}, this.options.style),
+                columnsTitle: this.columns.map((item) => (typeof item === "string" ? item : (item.display || item.name))),
+                columnsName: this.columnsName = this.columns.map((item) => {
+                    return {
+                        name: typeof item === "string" ? item : item.name,
+                        hasFormat: !!item.format,
+                        format: item.format
+                    };
+                }),
                 rowData: {},
-                serverParams: {},
-                mode: "data"  //e.g. data, api, promise
+                serverParams: {pagination: this.options.pagination},
+                mode: "data",  //e.g. data, api, promise
+                pagination: {
+                    start: 0,
+                    size: this.options.pagination.size
+                }
             };
         },
         computed: {},
-        methods: {refresh},
+        methods: {
+            refresh,
+            onPageIndexChange,
+            goToPageNum
+        },
         mounted
     };
 
     /*******************************
      * methods
      *******************************/
+    function onPageIndexChange(index) {
+        console.log(index);
+        this.$emit("onPageIndexChange", index);
+        goToPageNum(index);
+    }
+
+    function goToPageNum(index) {
+
+    }
 
     function refresh() {
+        this.$emit("onRefreshBegin");
         source2RowData(this.source, this.serverParams).then((data) => {
             this.rowData = data;
+            this.$emit("onRefreshFinished");
         });
     }
 
@@ -124,25 +143,6 @@
      ***********************/
 
     function mounted() {
-
-        //Init Style
-        this.style = merge(this.options.styleType ? style[this.options.styleType] : {}, this.options.style);
-
-        // Init column display title
-        this.columnsTitle = this.columns.map(function (item) {
-            return typeof item === "string" ? item : (item.display || item.name);
-        });
-
-        // Init column name for row data
-        this.columnsName = this.columns.map(function (item) {
-            return {
-                name: typeof item === "string" ? item : item.name,
-                hasFormat: !!item.format,
-                format: item.format
-            };
-        });
-        // Init serverParams
-        this.serverParams.pagination = this.options.pagination;
 
         this.refresh();
 
