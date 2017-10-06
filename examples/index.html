@@ -30,8 +30,7 @@
             todoTable: {
                 columns: ["id", {name: "desc"}, {
                     name: "op", format: function (row) {
-                        console.log(row);
-                        return "fdsaf";
+                        return row.desc;
                     }
                 }],
                 source: {apiUrl: "/data/mock.json", method: "GET"}

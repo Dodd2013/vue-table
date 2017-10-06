@@ -20,7 +20,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </th>
                 </tr>
                 <tr>
@@ -42,7 +41,7 @@
                             </div>
                             <div class="right aligned ten wide column">
                                 <vue-table-pagination :styles="style" @pageIndexChange="onPageIndexChange"
-                                                      :pagination="{current:3,total:50,size:10}"></vue-table-pagination>
+                                                      :pagination="pagination"></vue-table-pagination>
                             </div>
                         </div>
                     </th>
@@ -103,8 +102,9 @@
                 serverParams: {pagination: this.options.pagination},
                 mode: "data",  //e.g. data, api, promise
                 pagination: {
-                    start: 0,
-                    size: this.options.pagination.size
+                    startPage: 0,
+                    size: this.options.pagination.size,
+                    total: 50
                 }
             };
         },
@@ -120,19 +120,19 @@
     /*******************************
      * methods
      *******************************/
-    function onPageIndexChange(index) {
-        console.log(index);
-        this.$emit("onPageIndexChange", index);
-        goToPageNum(index);
+    function onPageIndexChange(pagination) {
+        this.$emit("onPageIndexChange", pagination);
+        this.goToPageNum(pagination);
     }
 
-    function goToPageNum(index) {
-
+    function goToPageNum(pagination) {
+        this.serverParams.pagination = pagination;
+        this.refresh();
     }
 
     function refresh() {
         this.$emit("onRefreshBegin");
-        source2RowData(this.source, this.serverParams).then((data) => {
+        return source2RowData(this.source, this.serverParams).then((data) => {
             this.rowData = data;
             this.$emit("onRefreshFinished");
         });
@@ -143,8 +143,6 @@
      ***********************/
 
     function mounted() {
-
-        this.refresh();
 
     }
 
@@ -177,14 +175,23 @@
      * @param params
      * @return {Promise}
      */
-    function sourceApiData(source, params) {
+    function sourceApiData(source, serverParams) {
         return new Promise(function (resolve, reject) {
 
             let httpRequest = null;
+            let params = {
+                offset: serverParams.pagination.offset,
+                size: serverParams.pagination.size,
+                search: serverParams.search
+            };
             let paramsStr = [];
             let method = source.method.toUpperCase() || "GET";
+
             for (let key in params) {
-                paramsStr.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
+                if (params[key] !== null && typeof(params[key]) !== "undefined") {
+                    paramsStr.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
+                }
+
             }
 
             if (window.XMLHttpRequest) { // Mozilla, Safari, IE7+ ...
@@ -202,7 +209,6 @@
             httpRequest.onreadystatechange = function () {
                 if (httpRequest.readyState === XMLHttpRequest.DONE) {
                     if (httpRequest.status === 200) {
-                        console.log(httpRequest.responseText);
                         resolve(JSON.parse(httpRequest.responseText));
                     } else {
                         reject({msg: "Error when get data form server!"});

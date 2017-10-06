@@ -36,14 +36,14 @@ var style = {
 })();
 
 var vueTablePagination = { render: function render() {
-        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-pagination-component", class: _vm.styles.pagination }, [_c('a', { class: [_vm.styles.paginationPre, { 'disabled': _vm.pagination.current === 0 }], on: { "click": function click($event) {
-                    _vm.onPagesClick(_vm.pagination.current - 1);
+        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-pagination-component", class: _vm.styles.pagination }, [_c('a', { class: [_vm.styles.paginationPre, { 'disabled': _vm.currentPage === 1 }], on: { "click": function click($event) {
+                    _vm.onPagesClick(_vm.currentPage - 1);
                 } } }, [_c('i', { class: _vm.styles.paginationPreIcon })]), _vm._l(_vm.pages, function (index) {
-            return _c('a', { class: [_vm.styles.paginationItem, { 'active': _vm.pagination.current === index - 1 }], on: { "click": function click($event) {
-                        _vm.onPagesClick(index - 1);
+            return _c('a', { class: [_vm.styles.paginationItem, { 'active': _vm.currentPage === index }], on: { "click": function click($event) {
+                        _vm.onPagesClick(index);
                     } } }, [_vm._v(_vm._s(index))]);
-        }), _vm._v(" "), _c('a', { class: [_vm.styles.paginationNext, { 'disabled': _vm.pagination.current === _vm.pageCount - 1 }], on: { "click": function click($event) {
-                    _vm.onPagesClick(_vm.pagination.current + 1);
+        }), _vm._v(" "), _c('a', { class: [_vm.styles.paginationNext, { 'disabled': _vm.currentPage === _vm.pageCount }], on: { "click": function click($event) {
+                    _vm.onPagesClick(_vm.currentPage + 1);
                 } } }, [_c('i', { class: _vm.styles.paginationNextIcon })])], 2);
     }, staticRenderFns: [], _scopeId: 'data-v-fb2af88e',
     name: "vue-table-pagination",
@@ -53,12 +53,12 @@ var vueTablePagination = { render: function render() {
         },
         pagination: {
             /**
-             * e.g. {current:0,total:30,size:10}
+             * e.g. {offset:0,total:30,size:10}
              */
             type: Object,
             default: function _default() {
                 return {
-                    current: 0,
+                    startPage: 0,
                     total: 10,
                     size: 10
                 };
@@ -73,16 +73,14 @@ var vueTablePagination = { render: function render() {
 
     },
     data: function data() {
-        return {};
+        return {
+            //1 based currentPage
+            currentPage: null
+        };
     },
 
     methods: {
-        onPagesClick: function onPagesClick(index) {
-            if (index !== this.pagination.current && index >= 0 && index < this.pageCount) {
-                console.log(index);
-                this.$emit("pageIndexChange", index);
-            }
-        }
+        onPagesClick: onPagesClick
     },
     computed: {
         pageCount: function pageCount() {
@@ -90,10 +88,35 @@ var vueTablePagination = { render: function render() {
         },
         pages: function pages() {
             return _.range(1, this.pageCount + 1);
+        },
+        offset: function offset() {
+            return (this.currentPage - 1) * this.pagination.size;
         }
     },
-    mounted: function mounted() {}
+    mounted: function mounted() {
+        this.onPagesClick(this.pagination.startPage + 1);
+    }
 };
+
+/*******************************************
+ * methods
+ *******************************************/
+
+/**
+ * OnPagesClick
+ * @param index
+ */
+function onPagesClick(index) {
+    if (index !== this.currentPage && index > 0 && index <= this.pageCount) {
+        this.currentPage = index;
+        var pagination = {
+            current: this.currentPage,
+            size: this.pagination.size,
+            offset: this.offset
+        };
+        this.$emit("pageIndexChange", pagination);
+    }
+}
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -237,7 +260,7 @@ var vueTable = { render: function render() {
             return _c('tr', _vm._l(_vm.columnsName, function (column) {
                 return _c('td', { domProps: { "innerHTML": _vm._s(column.hasFormat ? column.format(row) : row[column.name]) } });
             }));
-        })), _c('tfoot', [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "six wide column" }), _c('div', { staticClass: "right aligned ten wide column" }, [_c('vue-table-pagination', { attrs: { "styles": _vm.style, "pagination": { current: 3, total: 50, size: 10 } }, on: { "pageIndexChange": _vm.onPageIndexChange } })], 1)])])])])])])]);
+        })), _c('tfoot', [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "six wide column" }), _c('div', { staticClass: "right aligned ten wide column" }, [_c('vue-table-pagination', { attrs: { "styles": _vm.style, "pagination": _vm.pagination }, on: { "pageIndexChange": _vm.onPageIndexChange } })], 1)])])])])])])]);
     }, staticRenderFns: [function () {
         var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "ten wide column" }, [_c('h1', [_vm._v("Vue-Table")])]), _c('div', { staticClass: "right aligned six wide column" }, [_c('div', { staticClass: "ui search" }, [_c('div', { staticClass: "ui icon input" }, [_c('input', { staticClass: "prompt", attrs: { "type": "text", "placeholder": "Search countries..." } }), _vm._v(" "), _c('i', { staticClass: "search icon" })]), _c('div', { staticClass: "results" })])])]);
     }], _scopeId: 'data-v-19f1d484',
@@ -286,8 +309,9 @@ var vueTable = { render: function render() {
             serverParams: { pagination: this.options.pagination },
             mode: "data", //e.g. data, api, promise
             pagination: {
-                start: 0,
-                size: this.options.pagination.size
+                startPage: 0,
+                size: this.options.pagination.size,
+                total: 50
             }
         };
     },
@@ -304,19 +328,21 @@ var vueTable = { render: function render() {
 /*******************************
  * methods
  *******************************/
-function onPageIndexChange(index) {
-    console.log(index);
-    this.$emit("onPageIndexChange", index);
-    goToPageNum(index);
+function onPageIndexChange(pagination) {
+    this.$emit("onPageIndexChange", pagination);
+    this.goToPageNum(pagination);
 }
 
-function goToPageNum(index) {}
+function goToPageNum(pagination) {
+    this.serverParams.pagination = pagination;
+    this.refresh();
+}
 
 function refresh() {
     var _this = this;
 
     this.$emit("onRefreshBegin");
-    source2RowData(this.source, this.serverParams).then(function (data) {
+    return source2RowData(this.source, this.serverParams).then(function (data) {
         _this.rowData = data;
         _this.$emit("onRefreshFinished");
     });
@@ -326,10 +352,7 @@ function refresh() {
  * mounted
  ***********************/
 
-function mounted() {
-
-    this.refresh();
-}
+function mounted() {}
 
 /***********************
  * computed
@@ -360,14 +383,22 @@ function source2RowData(source, params) {
  * @param params
  * @return {Promise}
  */
-function sourceApiData(source, params) {
+function sourceApiData(source, serverParams) {
     return new Promise(function (resolve, reject) {
 
         var httpRequest = null;
+        var params = {
+            offset: serverParams.pagination.offset,
+            size: serverParams.pagination.size,
+            search: serverParams.search
+        };
         var paramsStr = [];
         var method = source.method.toUpperCase() || "GET";
+
         for (var key in params) {
-            paramsStr.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
+            if (params[key] !== null && typeof params[key] !== "undefined") {
+                paramsStr.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
+            }
         }
 
         if (window.XMLHttpRequest) {
@@ -387,7 +418,6 @@ function sourceApiData(source, params) {
         httpRequest.onreadystatechange = function () {
             if (httpRequest.readyState === XMLHttpRequest.DONE) {
                 if (httpRequest.status === 200) {
-                    console.log(httpRequest.responseText);
                     resolve(JSON.parse(httpRequest.responseText));
                 } else {
                     reject({ msg: "Error when get data form server!" });
