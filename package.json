@@ -35,7 +35,8 @@
     "rollup-plugin-commonjs": "^8.2.1",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-vue": "^2.4.2",
-    "vue": "^2.4.2"
+    "vue": "^2.4.2",
+    "vue-template-compiler": "^2.4.4"
   },
   "keywords": [
     "vue",
@@ -50,8 +51,6 @@
     "node": ">= 4.0.0",
     "npm": ">= 3.0.0"
   },
-  "overwrite":{
-
-  },
+  "overwrite": {},
   "license": "MIT"
 }
