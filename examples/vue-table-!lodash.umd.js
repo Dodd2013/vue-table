@@ -46,7 +46,7 @@ var vueTablePagination = { render: function render() {
                     _vm.onPagesClick(_vm.currentPage + 1);
                 } } }, [_c('i', { class: _vm.styles.paginationNextIcon })])], 2);
     }, staticRenderFns: [], _scopeId: 'data-v-fb2af88e',
-    name: "vue-table-pagination",
+    name: 'vue-table-pagination',
     props: {
         styles: {
             type: Object
@@ -75,7 +75,7 @@ var vueTablePagination = { render: function render() {
     data: function data() {
         return {
             //1 based currentPage
-            currentPage: null
+            currentPage: 1
         };
     },
 
@@ -94,13 +94,16 @@ var vueTablePagination = { render: function render() {
         }
     },
     mounted: function mounted() {
-        this.onPagesClick(this.pagination.startPage + 1);
+        //            this.initPage()
     }
 };
 
 /*******************************************
  * methods
  *******************************************/
+//    function initPage() {
+//        this.onPagesClick(this.pagination.startPage + 1)
+//    }
 
 /**
  * OnPagesClick
@@ -114,9 +117,21 @@ function onPagesClick(index) {
             size: this.pagination.size,
             offset: this.offset
         };
-        this.$emit("pageIndexChange", pagination);
+        this.$emit('pageIndexChange', pagination);
     }
 }
+
+var defaultOpt = {
+    pagination: {
+        type: 'client', //e.g. client server none
+        offset: 0,
+        size: 10
+    },
+    styleType: 'semantic', //e.g. semantic bootstrap
+    style: {},
+    undefinedText: '-',
+    striped: false
+};
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -254,13 +269,13 @@ var asyncGenerator = function () {
 })();
 
 var vueTable = { render: function render() {
-        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-component", class: _vm.style.component }, [_c('div', { staticClass: "vue-table-toolbar", class: _vm.style.toolbar }), _vm._v(" "), _c('div', { staticClass: "vue-table-container", class: _vm.style.tableContainer }, [_c('table', { staticClass: "vue-table", class: [_vm.style.table, { 'striped': _vm.options.striped }] }, [_c('thead', { class: _vm.style.thead }, [_c('tr', _vm._l(_vm.columnsTitle, function (column) {
+        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-component", class: _vm.style.component }, [_c('div', { staticClass: "vue-table-toolbar", class: _vm.style.toolbar }), _vm._v(" "), _c('div', { staticClass: "vue-table-container", class: _vm.style.tableContainer }, [_c('table', { staticClass: "vue-table", class: [_vm.style.table, { 'striped': _vm.opt.striped }] }, [_c('thead', { class: _vm.style.thead }, [_c('tr', _vm._l(_vm.columnsTitle, function (column) {
             return _c('th', [_vm._v(_vm._s(column))]);
-        }))]), _vm._v(" "), _c('tbody', { class: _vm.style.tbody }, _vm._l(_vm.rowData, function (row) {
+        }))]), _vm._v(" "), _c('tbody', { class: _vm.style.tbody }, _vm._l(_vm.displayRowData, function (row) {
             return _c('tr', _vm._l(_vm.columnsName, function (column) {
                 return _c('td', [!column.isAction ? _c('span', { domProps: { "innerHTML": _vm._s(column.hasFormat ? column.format(row) : row[column.name]) } }) : _vm._e(), _vm._v(" "), column.isAction ? _vm._t("action", null, { row: row }) : _vm._e()], 2);
             }));
-        })), _vm._v(" "), _c('tfoot', [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "six wide column" }), _vm._v(" "), _c('div', { staticClass: "right aligned ten wide column" }, [_c('vue-table-pagination', { attrs: { "styles": _vm.style, "pagination": _vm.pagination }, on: { "pageIndexChange": _vm.onPageIndexChange } })], 1)])])])])])])]);
+        })), _vm._v(" "), _c('tfoot', [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "six wide column" }), _vm._v(" "), _vm.opt.pagination.type !== 'none' ? _c('div', { staticClass: "right aligned ten wide column" }, [_c('vue-table-pagination', { attrs: { "styles": _vm.style, "pagination": _vm.pagination }, on: { "pageIndexChange": _vm.onPageIndexChange } })], 1) : _vm._e()])])])])])])]);
     }, staticRenderFns: [], _scopeId: 'data-v-19f1d484',
     name: 'vue-table',
     components: {
@@ -277,67 +292,76 @@ var vueTable = { render: function render() {
         options: {
             type: [Object],
             default: function _default() {
-                return {
-                    pagination: {
-                        type: 'client', //e.g. client server none
-                        size: 10
-                    },
-                    styleType: 'semantic', //e.g. semantic bootstrap
-                    style: {},
-                    undefinedText: '-',
-                    striped: false
-                };
+                return {};
             }
         }
     },
     data: function data() {
         return {
-            style: _.merge(this.options.styleType ? style[this.options.styleType] : {}, this.options.style),
-            columnsTitle: this.columns.map(function (item) {
-                return typeof item === 'string' ? item : item.display || item.name;
-            }),
-            columnsName: this.columns.map(function (item) {
-                return {
-                    name: typeof item === 'string' ? item : item.name,
-                    hasFormat: !!item.format,
-                    isAction: !!item.action,
-                    format: item.format
-                };
-            }),
-            hasAction: !!this.columns.find(function (item) {
-                return item.action;
-            }),
-            rowData: {},
-            serverParams: { pagination: this.options.pagination },
-            mode: 'data', //e.g. data, api, promise
-            pagination: {
-                startPage: 0,
-                size: this.options.pagination.size,
-                total: 50
-            }
+            opt: null,
+            style: null,
+            columnsTitle: null,
+            columnsName: null,
+            rowData: null,
+            serverParams: null,
+            mode: null, //e.g. data, api, promise
+            pagination: null,
+            clientParams: null
         };
     },
 
-    computed: {},
+    computed: {
+        hasAction: hasAction,
+        isClientPagination: isClientPagination,
+        isServerPagination: isServerPagination,
+        displayRowData: displayRowData
+    },
     methods: {
         refresh: refresh,
         onPageIndexChange: onPageIndexChange,
         goToPageNum: goToPageNum,
-        source2RowData: source2RowData
+        source2RowData: source2RowData,
+        initData: initData,
+        initServerParams: initServerParams,
+        initClientParams: initClientParams,
+        onRefreshFinished: onRefreshFinished,
+        getClientPaginationData: getClientPaginationData
+
     },
-    mounted: mounted
+    mounted: mounted,
+    beforeMount: beforeMount
 
     /*******************************
      * methods
      *******************************/
-};function onPageIndexChange(pagination) {
+};function getClientPaginationData() {
+    return _.slice(this.rowData, this.clientParams.pagination.offset, this.clientParams.pagination.offset + this.pagination.size);
+}
+
+function onRefreshFinished(data) {
+    if (this.opt.pagination.type === 'client') {
+        this.pagination.total = data.length;
+        this.rowData = data;
+    }
+    if (this.opt.pagination.type === 'server') {
+        this.pagination.total = data.total;
+        this.rowData = data.data;
+    }
+}
+
+function onPageIndexChange(pagination) {
     this.$emit('onPageIndexChange', pagination);
     this.goToPageNum(pagination);
 }
 
 function goToPageNum(pagination) {
-    this.serverParams.pagination = pagination;
-    this.refresh();
+    if (this.isServerPagination) {
+        this.serverParams.pagination = pagination;
+        this.refresh();
+    }
+    if (this.isClientPagination) {
+        this.clientParams.pagination = pagination;
+    }
 }
 
 function refresh() {
@@ -345,9 +369,49 @@ function refresh() {
 
     this.$emit('onRefreshBegin');
     return this.source2RowData().then(function (data) {
-        _this.rowData = data;
+        _this.onRefreshFinished(data);
         _this.$emit('onRefreshFinished', data);
     });
+}
+
+function initServerParams() {
+    var serverParams = {};
+    if (this.isServerPagination) {
+        serverParams.pagination = this.opt.pagination;
+    }
+    return serverParams;
+}
+
+function initClientParams() {
+    var clientParams = {};
+    if (this.isClientPagination) {
+        clientParams.pagination = this.opt.pagination;
+    }
+    return clientParams;
+}
+
+function initData() {
+    this.opt = _.merge({}, defaultOpt, this.options);
+    this.style = _.merge(this.opt.styleType ? style[this.opt.styleType] : {}, this.opt.style);
+    this.columnsTitle = this.columns.map(function (item) {
+        return typeof item === 'string' ? item : item.display || item.name;
+    });
+    this.columnsName = this.columns.map(function (item) {
+        return {
+            name: typeof item === 'string' ? item : item.name,
+            hasFormat: !!item.format,
+            isAction: !!item.action,
+            format: item.format
+        };
+    });
+    this.pagination = {
+        startPage: 0,
+        size: this.opt.pagination.size,
+        total: 1
+    };
+    this.mode = 'data';
+    this.serverParams = this.initServerParams();
+    this.clientParams = this.initClientParams();
 }
 
 /**
@@ -377,11 +441,42 @@ function source2RowData() {
  * mounted
  ***********************/
 
-function mounted() {}
+function mounted() {
+    this.refresh();
+}
+
+/***********************
+ * beforeMount
+ ***********************/
+function beforeMount() {
+    this.initData();
+}
 
 /***********************
  * computed
  ***********************/
+function hasAction() {
+    return !!this.columns.find(function (item) {
+        return item.action;
+    });
+}
+
+function isClientPagination() {
+    return this.opt.pagination.type === 'client';
+}
+
+function isServerPagination() {
+    return this.opt.pagination.type === 'server';
+}
+
+function displayRowData() {
+    if (this.isClientPagination) {
+        return this.getClientPaginationData();
+    }
+    if (this.isServerPagination) {
+        return this.rowData;
+    }
+}
 
 /**
  * For api mode, we ues XMLHttpRequest to get data
@@ -394,10 +489,13 @@ function sourceApiData(source, serverParams) {
 
         var httpRequest = null;
         var params = {
-            offset: serverParams.pagination.offset,
-            size: serverParams.pagination.size,
             search: serverParams.search
         };
+        if (serverParams.pagination) {
+            params.offset = serverParams.pagination.offset;
+            params.size = serverParams.pagination.size;
+        }
+
         var paramsStr = [];
         var method = source.method.toUpperCase() || 'GET';
 
