@@ -9,7 +9,11 @@
 <div id="app">
     <div class="ui container">
         <h1>{{message}}</h1>
-        <vue-table :columns="todoTable.columns" :source="todoTable.source"></vue-table>
+        <vue-table :columns="todoTable.columns" :source="todoTable.source">
+            <template slot="action" scope="props">
+                <button class="ui text button" @click="alert(props.row)">alert</button>
+            </template>
+        </vue-table>
     </div>
 
 </div>
@@ -21,21 +25,38 @@
 <script src="https://cdn.bootcss.com/semantic-ui/2.2.13/semantic.js"></script>
 <script>
     var app = new Vue({
-        el: "#app",
+        el: '#app',
         components: {
             vueTable: vueTable.vueTable
         },
         data: {
-            message: "Hello Vue-table!",
+            message: 'Hello Vue-table!',
             todoTable: {
-                columns: ["id", {name: "desc"}, {
-                    name: "op", format: function (row) {
-                        return row.desc;
+                columns: [
+                    {
+                        name: 'id',
+                        dispaly: 'Id'
+                    },
+                    {name: 'desc'},
+                    {
+                        name: 'format',
+                        format: function (row) {
+                            return '<a>' + row.desc + '</a>'
+                        }
+                    },
+                    {
+                        name: 'OP',
+                        action: true
                     }
-                }],
-                source: {apiUrl: "/data/mock.json", method: "GET"}
+                ],
+                source: {apiUrl: '/data/mock.json', method: 'GET'}
+            }
+        },
+        methods: {
+            alert: function (x) {
+                alert(x)
             }
         }
-    });
+    })
 </script>
 </html>

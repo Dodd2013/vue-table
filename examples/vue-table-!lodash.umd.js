@@ -38,7 +38,7 @@ var style = {
 var vueTablePagination = { render: function render() {
         var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-pagination-component", class: _vm.styles.pagination }, [_c('a', { class: [_vm.styles.paginationPre, { 'disabled': _vm.currentPage === 1 }], on: { "click": function click($event) {
                     _vm.onPagesClick(_vm.currentPage - 1);
-                } } }, [_c('i', { class: _vm.styles.paginationPreIcon })]), _vm._l(_vm.pages, function (index) {
+                } } }, [_c('i', { class: _vm.styles.paginationPreIcon })]), _vm._v(" "), _vm._l(_vm.pages, function (index) {
             return _c('a', { class: [_vm.styles.paginationItem, { 'active': _vm.currentPage === index }], on: { "click": function click($event) {
                         _vm.onPagesClick(index);
                     } } }, [_vm._v(_vm._s(index))]);
@@ -254,17 +254,15 @@ var asyncGenerator = function () {
 })();
 
 var vueTable = { render: function render() {
-        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-component", class: _vm.style.component }, [_c('div', { staticClass: "vue-table-toolbar", class: _vm.style.toolbar }), _c('div', { staticClass: "vue-table-container", class: _vm.style.tableContainer }, [_c('table', { staticClass: "vue-table", class: [_vm.style.table, { 'striped': _vm.options.striped }] }, [_c('thead', { class: _vm.style.thead }, [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_vm._m(0)])]), _c('tr', _vm._l(_vm.columnsTitle, function (column) {
+        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-component", class: _vm.style.component }, [_c('div', { staticClass: "vue-table-toolbar", class: _vm.style.toolbar }), _vm._v(" "), _c('div', { staticClass: "vue-table-container", class: _vm.style.tableContainer }, [_c('table', { staticClass: "vue-table", class: [_vm.style.table, { 'striped': _vm.options.striped }] }, [_c('thead', { class: _vm.style.thead }, [_c('tr', _vm._l(_vm.columnsTitle, function (column) {
             return _c('th', [_vm._v(_vm._s(column))]);
-        }))]), _c('tbody', { class: _vm.style.tbody }, _vm._l(_vm.rowData, function (row) {
+        }))]), _vm._v(" "), _c('tbody', { class: _vm.style.tbody }, _vm._l(_vm.rowData, function (row) {
             return _c('tr', _vm._l(_vm.columnsName, function (column) {
-                return _c('td', { domProps: { "innerHTML": _vm._s(column.hasFormat ? column.format(row) : row[column.name]) } });
+                return _c('td', [!column.isAction ? _c('span', { domProps: { "innerHTML": _vm._s(column.hasFormat ? column.format(row) : row[column.name]) } }) : _vm._e(), _vm._v(" "), column.isAction ? _vm._t("action", null, { row: row }) : _vm._e()], 2);
             }));
-        })), _c('tfoot', [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "six wide column" }), _c('div', { staticClass: "right aligned ten wide column" }, [_c('vue-table-pagination', { attrs: { "styles": _vm.style, "pagination": _vm.pagination }, on: { "pageIndexChange": _vm.onPageIndexChange } })], 1)])])])])])])]);
-    }, staticRenderFns: [function () {
-        var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "ten wide column" }, [_c('h1', [_vm._v("Vue-Table")])]), _c('div', { staticClass: "right aligned six wide column" }, [_c('div', { staticClass: "ui search" }, [_c('div', { staticClass: "ui icon input" }, [_c('input', { staticClass: "prompt", attrs: { "type": "text", "placeholder": "Search countries..." } }), _vm._v(" "), _c('i', { staticClass: "search icon" })]), _c('div', { staticClass: "results" })])])]);
-    }], _scopeId: 'data-v-19f1d484',
-    name: "vue-table",
+        })), _vm._v(" "), _c('tfoot', [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "six wide column" }), _vm._v(" "), _c('div', { staticClass: "right aligned ten wide column" }, [_c('vue-table-pagination', { attrs: { "styles": _vm.style, "pagination": _vm.pagination }, on: { "pageIndexChange": _vm.onPageIndexChange } })], 1)])])])])])])]);
+    }, staticRenderFns: [], _scopeId: 'data-v-19f1d484',
+    name: 'vue-table',
     components: {
         vueTablePagination: vueTablePagination
     },
@@ -281,12 +279,12 @@ var vueTable = { render: function render() {
             default: function _default() {
                 return {
                     pagination: {
-                        type: "client", //e.g. client server none
+                        type: 'client', //e.g. client server none
                         size: 10
                     },
-                    styleType: "semantic", //e.g. semantic bootstrap
+                    styleType: 'semantic', //e.g. semantic bootstrap
                     style: {},
-                    undefinedText: "-",
+                    undefinedText: '-',
                     striped: false
                 };
             }
@@ -296,18 +294,22 @@ var vueTable = { render: function render() {
         return {
             style: _.merge(this.options.styleType ? style[this.options.styleType] : {}, this.options.style),
             columnsTitle: this.columns.map(function (item) {
-                return typeof item === "string" ? item : item.display || item.name;
+                return typeof item === 'string' ? item : item.display || item.name;
             }),
-            columnsName: this.columnsName = this.columns.map(function (item) {
+            columnsName: this.columns.map(function (item) {
                 return {
-                    name: typeof item === "string" ? item : item.name,
+                    name: typeof item === 'string' ? item : item.name,
                     hasFormat: !!item.format,
+                    isAction: !!item.action,
                     format: item.format
                 };
             }),
+            hasAction: !!this.columns.find(function (item) {
+                return item.action;
+            }),
             rowData: {},
             serverParams: { pagination: this.options.pagination },
-            mode: "data", //e.g. data, api, promise
+            mode: 'data', //e.g. data, api, promise
             pagination: {
                 startPage: 0,
                 size: this.options.pagination.size,
@@ -320,16 +322,16 @@ var vueTable = { render: function render() {
     methods: {
         refresh: refresh,
         onPageIndexChange: onPageIndexChange,
-        goToPageNum: goToPageNum
+        goToPageNum: goToPageNum,
+        source2RowData: source2RowData
     },
     mounted: mounted
-};
 
-/*******************************
- * methods
- *******************************/
-function onPageIndexChange(pagination) {
-    this.$emit("onPageIndexChange", pagination);
+    /*******************************
+     * methods
+     *******************************/
+};function onPageIndexChange(pagination) {
+    this.$emit('onPageIndexChange', pagination);
     this.goToPageNum(pagination);
 }
 
@@ -341,11 +343,34 @@ function goToPageNum(pagination) {
 function refresh() {
     var _this = this;
 
-    this.$emit("onRefreshBegin");
-    return source2RowData(this.source, this.serverParams).then(function (data) {
+    this.$emit('onRefreshBegin');
+    return this.source2RowData().then(function (data) {
         _this.rowData = data;
-        _this.$emit("onRefreshFinished");
+        _this.$emit('onRefreshFinished', data);
     });
+}
+
+/**
+ * Get rowData for source
+ * @param source
+ * @return {*}
+ */
+function source2RowData() {
+    var source = this.source;
+    var params = this.serverParams;
+    if (source.apiUrl) {
+        // api mode
+        this.mode = 'api';
+        return sourceApiData(source, params);
+    } else if (typeof source === 'function') {
+        // promise mode
+        this.mode = 'promise';
+        return source(params);
+    } else if ((typeof source === 'undefined' ? 'undefined' : _typeof(source)) === 'object') {
+        // data mode
+        this.mode = 'data';
+        return Promise.resolve(source);
+    }
 }
 
 /***********************
@@ -357,25 +382,6 @@ function mounted() {}
 /***********************
  * computed
  ***********************/
-
-/**
- * Get rowData for source
- * @param source
- * @return {*}
- */
-function source2RowData(source, params) {
-
-    if (source.apiUrl) {
-        // api mode
-        return sourceApiData(source, params);
-    } else if (typeof source === "function") {
-        // promise mode
-        return source(params);
-    } else if ((typeof source === 'undefined' ? 'undefined' : _typeof(source)) === "object") {
-        // data mode
-        return Promise.resolve(source);
-    }
-}
 
 /**
  * For api mode, we ues XMLHttpRequest to get data
@@ -393,11 +399,11 @@ function sourceApiData(source, serverParams) {
             search: serverParams.search
         };
         var paramsStr = [];
-        var method = source.method.toUpperCase() || "GET";
+        var method = source.method.toUpperCase() || 'GET';
 
         for (var key in params) {
-            if (params[key] !== null && typeof params[key] !== "undefined") {
-                paramsStr.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
+            if (params[key] !== null && typeof params[key] !== 'undefined') {
+                paramsStr.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
             }
         }
 
@@ -406,12 +412,12 @@ function sourceApiData(source, serverParams) {
             httpRequest = new XMLHttpRequest();
         } else if (window.ActiveXObject) {
             // IE 6 and older
-            httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+            httpRequest = new ActiveXObject('Microsoft.XMLHTTP');
         }
 
-        httpRequest.open(method, source.apiUrl + (method === "GET" ? (source.apiUrl.indexOf("?") > -1 ? "&" : "?") + paramsStr.join("&") : ""));
+        httpRequest.open(method, source.apiUrl + (method === 'GET' ? (source.apiUrl.indexOf('?') > -1 ? '&' : '?') + paramsStr.join('&') : ''));
 
-        httpRequest.setRequestHeader("Content-type", "application/json");
+        httpRequest.setRequestHeader('Content-type', 'application/json');
         for (var header in source.headers) {
             httpRequest.setRequestHeader(header, source.headers[header]);
         }
@@ -420,12 +426,12 @@ function sourceApiData(source, serverParams) {
                 if (httpRequest.status === 200) {
                     resolve(JSON.parse(httpRequest.responseText));
                 } else {
-                    reject({ msg: "Error when get data form server!" });
+                    reject({ msg: 'Error when get data form server!' });
                 }
             }
         };
 
-        httpRequest.send(paramsStr.join("&"));
+        httpRequest.send(paramsStr.join('&'));
     });
 }
 
