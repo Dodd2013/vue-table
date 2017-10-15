@@ -2,7 +2,7 @@
     <div class='vue-table-component' :class="style.component">
         <div class="vue-table-toolbar" :class="style.toolbar"></div>
         <div class="vue-table-container" :class="style.tableContainer">
-            <table class="vue-table" :class="[style.table,{'striped':options.striped}]">
+            <table class="vue-table" :class="[style.table,{'striped':opt.striped}]">
                 <thead :class="style.thead">
                 <!--<tr v-if="false">-->
                 <!--<th :colspan="columnsTitle.length">-->
@@ -27,9 +27,10 @@
                 </tr>
                 </thead>
                 <tbody :class="style.tbody">
-                <tr v-for="row in rowData">
+                <tr v-for="row in displayRowData">
                     <td v-for="column in columnsName">
-                        <span v-if="!column.isAction" v-html="column.hasFormat ? column.format(row) : row[column.name]"></span>
+                        <span v-if="!column.isAction"
+                              v-html="column.hasFormat ? column.format(row) : row[column.name]"></span>
                         <slot v-if="column.isAction" name="action" :row="row"></slot>
                     </td>
                 </tr>
@@ -41,7 +42,7 @@
                             <div class="six wide column">
 
                             </div>
-                            <div class="right aligned ten wide column">
+                            <div class="right aligned ten wide column" v-if="opt.pagination.type!=='none'">
                                 <vue-table-pagination :styles="style" @pageIndexChange="onPageIndexChange"
                                                       :pagination="pagination"></vue-table-pagination>
                             </div>
@@ -58,7 +59,7 @@
     import style from './style.js'
     import _ from 'lodash'
     import vueTablePagination from './vue-table-pagination.vue'
-
+    import defaultOpt from './defaultOpt.config'
 
     export default {
         name: 'vue-table',
@@ -75,74 +76,123 @@
             },
             options: {
                 type: [Object],
-                default: function () {
-                    return {
-                        pagination: {
-                            type: 'client',  //e.g. client server none
-                            size: 10
-                        },
-                        styleType: 'semantic', //e.g. semantic bootstrap
-                        style: {},
-                        undefinedText: '-',
-                        striped: false
-                    }
+                default: () => {
+                    return {}
                 }
             }
         },
         data() {
             return {
-                style: _.merge(this.options.styleType ? style[this.options.styleType] : {}, this.options.style),
-                columnsTitle: this.columns.map((item) => (typeof item === 'string' ? item : (item.display || item.name))),
-                columnsName: this.columns.map((item) => {
-                    return {
-                        name: typeof item === 'string' ? item : item.name,
-                        hasFormat: !!item.format,
-                        isAction: !!item.action,
-                        format: item.format
-                    }
-                }),
-                hasAction: !!this.columns.find((item) => {
-                    return item.action
-                }),
-                rowData: {},
-                serverParams: {pagination: this.options.pagination},
-                mode: 'data',  //e.g. data, api, promise
-                pagination: {
-                    startPage: 0,
-                    size: this.options.pagination.size,
-                    total: 50
-                }
+                opt: null,
+                style: null,
+                columnsTitle: null,
+                columnsName: null,
+                rowData: null,
+                serverParams: null,
+                mode: null,  //e.g. data, api, promise
+                pagination: null,
+                clientParams: null
             }
         },
-        computed: {},
+        computed: {
+            hasAction,
+            isClientPagination,
+            isServerPagination,
+            displayRowData
+        },
         methods: {
             refresh,
             onPageIndexChange,
             goToPageNum,
-            source2RowData
+            source2RowData,
+            initData,
+            initServerParams,
+            initClientParams,
+            onRefreshFinished,
+            getClientPaginationData
+
         },
-        mounted
+        mounted,
+        beforeMount
     }
 
     /*******************************
      * methods
      *******************************/
+    function getClientPaginationData() {
+        return _.slice(this.rowData, this.clientParams.pagination.offset, this.clientParams.pagination.offset + this.pagination.size)
+    }
+
+    function onRefreshFinished(data) {
+        if (this.opt.pagination.type === 'client') {
+            this.pagination.total = data.length
+            this.rowData = data
+        }
+        if (this.opt.pagination.type === 'server') {
+            this.pagination.total = data.total
+            this.rowData = data.data
+        }
+    }
+
     function onPageIndexChange(pagination) {
         this.$emit('onPageIndexChange', pagination)
         this.goToPageNum(pagination)
     }
 
     function goToPageNum(pagination) {
-        this.serverParams.pagination = pagination
-        this.refresh()
+        if (this.isServerPagination) {
+            this.serverParams.pagination = pagination
+            this.refresh()
+        }
+        if (this.isClientPagination) {
+            this.clientParams.pagination = pagination
+        }
     }
 
     function refresh() {
         this.$emit('onRefreshBegin')
         return this.source2RowData().then((data) => {
-            this.rowData = data
+            this.onRefreshFinished(data)
             this.$emit('onRefreshFinished', data)
         })
+    }
+
+    function initServerParams() {
+        let serverParams = {}
+        if (this.isServerPagination) {
+            serverParams.pagination = this.opt.pagination
+        }
+        return serverParams
+    }
+
+    function initClientParams() {
+        let clientParams = {}
+        if (this.isClientPagination) {
+            clientParams.pagination = this.opt.pagination
+        }
+        return clientParams
+    }
+
+    function initData() {
+        this.opt = _.merge({}, defaultOpt, this.options)
+        this.style = _.merge(this.opt.styleType ? style[this.opt.styleType] : {}, this.opt.style)
+        this.columnsTitle = this.columns.map((item) => (typeof item === 'string' ? item : (item.display || item.name)))
+        this.columnsName = this.columns.map((item) => {
+            return {
+                name: typeof item === 'string' ? item : item.name,
+                hasFormat: !!item.format,
+                isAction: !!item.action,
+                format: item.format
+            }
+        })
+        this.pagination = {
+            startPage: 0,
+            size: this.opt.pagination.size,
+            total: 1
+        }
+        this.mode = 'data'
+        this.serverParams = this.initServerParams()
+        this.clientParams = this.initClientParams()
     }
 
     /**
@@ -173,13 +223,41 @@
      ***********************/
 
     function mounted() {
+        this.refresh()
+    }
 
+    /***********************
+     * beforeMount
+     ***********************/
+    function beforeMount() {
+        this.initData()
     }
 
     /***********************
      * computed
      ***********************/
+    function hasAction() {
+        return !!this.columns.find((item) => {
+            return item.action
+        })
+    }
 
+    function isClientPagination() {
+        return this.opt.pagination.type === 'client'
+    }
+
+    function isServerPagination() {
+        return this.opt.pagination.type === 'server'
+    }
+
+    function displayRowData() {
+        if (this.isClientPagination) {
+            return this.getClientPaginationData()
+        }
+        if (this.isServerPagination) {
+            return this.rowData
+        }
+    }
 
     /**
      * For api mode, we ues XMLHttpRequest to get data
@@ -192,10 +270,13 @@
 
             let httpRequest = null
             let params = {
-                offset: serverParams.pagination.offset,
-                size: serverParams.pagination.size,
                 search: serverParams.search
             }
+            if (serverParams.pagination) {
+                params.offset = serverParams.pagination.offset
+                params.size = serverParams.pagination.size
+            }
+
             let paramsStr = []
             let method = source.method.toUpperCase() || 'GET'
 

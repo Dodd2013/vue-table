@@ -9,9 +9,9 @@
 <div id="app">
     <div class="ui container">
         <h1>{{message}}</h1>
-        <vue-table :columns="todoTable.columns" :source="todoTable.source">
+        <vue-table :columns="todoTable.columns" :source="todoTable.source" :options="todoTable.options">
             <template slot="action" scope="props">
-                <button class="ui text button" @click="alert(props.row)">alert</button>
+                <button class="ui text button" @click="alert(props.row.id)">showId</button>
             </template>
         </vue-table>
     </div>
@@ -49,7 +49,8 @@
                         action: true
                     }
                 ],
-                source: {apiUrl: '/data/mock.json', method: 'GET'}
+                source: {apiUrl: '/data/mock.json', method: 'GET'},
+                options: {pagination: {size: 8}}
             }
         },
         methods: {
