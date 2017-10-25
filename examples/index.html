@@ -9,7 +9,9 @@
 <div id="app">
     <div class="ui container">
         <h1>{{message}}</h1>
-        <vue-table :columns="todoTable.columns" :source="todoTable.source" :options="todoTable.options">
+        <vue-table @on-row-select="onRowSelect" :columns="todoTable.columns"
+                   :source="todoTable.source"
+                   :options="todoTable.options">
             <template slot="action" scope="props">
                 <button class="ui text button" @click="alert(props.row.id)">showId</button>
             </template>
@@ -50,12 +52,16 @@
                     }
                 ],
                 source: {apiUrl: '/data/mock.json', method: 'GET'},
-                options: {pagination: {size: 8}}
+                options: {pagination: {size: 8}, canSelect: true}
             }
         },
         methods: {
-            alert: function (x) {
-                alert(x)
+            alert(x) {
+                console.log(x)
+            },
+            onRowSelect(row) {
+                console.log('fdsafds')
+                console.log(JSON.stringify(row))
             }
         }
     })

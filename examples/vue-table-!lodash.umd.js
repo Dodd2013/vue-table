@@ -7,6 +7,7 @@
 _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
 
 var semantic = {
+    selectedRow: 'active',
     tableContainer: "",
     table: "ui celled teal table",
     pagination: "ui pagination menu",
@@ -130,7 +131,9 @@ var defaultOpt = {
     styleType: 'semantic', //e.g. semantic bootstrap
     style: {},
     undefinedText: '-',
-    striped: false
+    striped: false,
+    canSelect: false,
+    selectMode: 'single' //e.g. single multi
 };
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -272,7 +275,9 @@ var vueTable = { render: function render() {
         var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;return _c('div', { staticClass: "vue-table-component", class: _vm.style.component }, [_c('div', { staticClass: "vue-table-toolbar", class: _vm.style.toolbar }), _vm._v(" "), _c('div', { staticClass: "vue-table-container", class: _vm.style.tableContainer }, [_c('table', { staticClass: "vue-table", class: [_vm.style.table, { 'striped': _vm.opt.striped }] }, [_c('thead', { class: _vm.style.thead }, [_c('tr', _vm._l(_vm.columnsTitle, function (column) {
             return _c('th', [_vm._v(_vm._s(column))]);
         }))]), _vm._v(" "), _c('tbody', { class: _vm.style.tbody }, _vm._l(_vm.displayRowData, function (row) {
-            return _c('tr', _vm._l(_vm.columnsName, function (column) {
+            return _c('tr', { class: row._vueTable_Selected ? _vm.style.selectedRow : '', on: { "click": function click($event) {
+                        _vm.onRowSelect(row);
+                    } } }, _vm._l(_vm.columnsName, function (column) {
                 return _c('td', [!column.isAction ? _c('span', { domProps: { "innerHTML": _vm._s(column.hasFormat ? column.format(row) : row[column.name]) } }) : _vm._e(), _vm._v(" "), column.isAction ? _vm._t("action", null, { row: row }) : _vm._e()], 2);
             }));
         })), _vm._v(" "), _c('tfoot', [_c('tr', [_c('th', { attrs: { "colspan": _vm.columnsTitle.length } }, [_c('div', { staticClass: "ui grid" }, [_c('div', { staticClass: "six wide column" }), _vm._v(" "), _vm.opt.pagination.type !== 'none' ? _c('div', { staticClass: "right aligned ten wide column" }, [_c('vue-table-pagination', { attrs: { "styles": _vm.style, "pagination": _vm.pagination }, on: { "pageIndexChange": _vm.onPageIndexChange } })], 1) : _vm._e()])])])])])])]);
@@ -306,7 +311,8 @@ var vueTable = { render: function render() {
             serverParams: null,
             mode: null, //e.g. data, api, promise
             pagination: null,
-            clientParams: null
+            clientParams: null,
+            selectedRow: null
         };
     },
 
@@ -325,7 +331,8 @@ var vueTable = { render: function render() {
         initServerParams: initServerParams,
         initClientParams: initClientParams,
         onRefreshFinished: onRefreshFinished,
-        getClientPaginationData: getClientPaginationData
+        getClientPaginationData: getClientPaginationData,
+        onRowSelect: onRowSelect
 
     },
     mounted: mounted,
@@ -334,7 +341,28 @@ var vueTable = { render: function render() {
     /*******************************
      * methods
      *******************************/
-};function getClientPaginationData() {
+};function onRowSelect(row) {
+    if (this.opt.canSelect) {
+        if (this.opt.selectMode === 'single') {
+
+            if (this.selectedRow) this.$set(this.selectedRow, '_vueTable_Selected', false);
+            this.selectedRow = row;
+            this.$set(row, '_vueTable_Selected', true);
+        }
+        //TODO multi select
+        if (this.opt.selectMode === 'multi') {
+            this.$set(row, '_vueTable_Selected', true);
+            if (this.selectedRow) {
+                this.selectedRow.push(row);
+            } else {
+                this.selectedRow = [].push(row);
+            }
+        }
+        this.$emit('on-row-select', this.selectedRow);
+    }
+}
+
+function getClientPaginationData() {
     return _.slice(this.rowData, this.clientParams.pagination.offset, this.clientParams.pagination.offset + this.pagination.size);
 }
 
@@ -455,6 +483,7 @@ function beforeMount() {
 /***********************
  * computed
  ***********************/
+
 function hasAction() {
     return !!this.columns.find(function (item) {
         return item.action;

@@ -7,5 +7,7 @@ export default {
     styleType: 'semantic', //e.g. semantic bootstrap
     style: {},
     undefinedText: '-',
-    striped: false
+    striped: false,
+    canSelect: false,
+    selectMode: 'single' //e.g. single multi
 }

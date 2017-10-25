@@ -1,4 +1,5 @@
 const semantic = {
+    selectedRow:'active',
     tableContainer: "",
     table: "ui celled teal table",
     pagination: "ui pagination menu",

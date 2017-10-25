@@ -27,7 +27,8 @@
                 </tr>
                 </thead>
                 <tbody :class="style.tbody">
-                <tr v-for="row in displayRowData">
+                <tr v-for="row in displayRowData" @click="onRowSelect(row)"
+                    :class="row._vueTable_Selected?style.selectedRow:''">
                     <td v-for="column in columnsName">
                         <span v-if="!column.isAction"
                               v-html="column.hasFormat ? column.format(row) : row[column.name]"></span>
@@ -91,7 +92,8 @@
                 serverParams: null,
                 mode: null,  //e.g. data, api, promise
                 pagination: null,
-                clientParams: null
+                clientParams: null,
+                selectedRow: null
             }
         },
         computed: {
@@ -109,7 +111,8 @@
             initServerParams,
             initClientParams,
             onRefreshFinished,
-            getClientPaginationData
+            getClientPaginationData,
+            onRowSelect
 
         },
         mounted,
@@ -119,6 +122,27 @@
     /*******************************
      * methods
      *******************************/
+    function onRowSelect(row) {
+        if (this.opt.canSelect) {
+            if (this.opt.selectMode === 'single') {
+
+                if (this.selectedRow) this.$set(this.selectedRow, '_vueTable_Selected', false)
+                this.selectedRow = row
+                this.$set(row, '_vueTable_Selected', true)
+            }
+            //TODO multi select
+            if (this.opt.selectMode === 'multi') {
+                this.$set(row, '_vueTable_Selected', true)
+                if (this.selectedRow) {
+                    this.selectedRow.push(row)
+                } else {
+                    this.selectedRow = [].push(row)
+                }
+            }
+            this.$emit('on-row-select', this.selectedRow)
+        }
+    }
+
     function getClientPaginationData() {
         return _.slice(this.rowData, this.clientParams.pagination.offset, this.clientParams.pagination.offset + this.pagination.size)
     }
@@ -236,6 +260,8 @@
     /***********************
      * computed
      ***********************/
+
+
     function hasAction() {
         return !!this.columns.find((item) => {
             return item.action
