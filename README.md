@@ -2,9 +2,9 @@
 Best date table for vue2
 
 ### How to use?
-npm(need to upload to npm)
+npm install best-vue-table
 
-For now, you can down /dist/vue-table.umd(.min).js
+Also you can down /dist/vue-table.umd(.min).js
 
 As the name shows, it is a **UMD** bundle!!
 So you can import/require or just use script tag!
